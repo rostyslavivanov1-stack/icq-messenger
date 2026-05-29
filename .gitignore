@@ -1,0 +1,7 @@
+.vscode/
+.metals/
+target/
+.bloop/
+project/
+.DS_Store
+*.log
