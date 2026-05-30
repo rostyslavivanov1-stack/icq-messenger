@@ -26,10 +26,8 @@ public class ClientApp {
 
     private static void handleUserInput(Socket socket) throws IOException {
             try (PrintWriter output = new PrintWriter(socket.getOutputStream(), true);
-                Scanner scanner = new Scanner(System.in)
-            ) {
+                Scanner scanner = new Scanner(System.in)) {
                 System.out.println("Type message or /exit to quit.");
-
                 while (true) {
                     String message = scanner.nextLine();
                     if (message.equalsIgnoreCase("/exit")) {
