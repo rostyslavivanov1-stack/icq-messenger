@@ -32,6 +32,7 @@ public class ServerController {
     private void initialize() {
         serverModel = new ServerModel();
         conversationsListView.setOnMouseClicked(event -> handleConversationSelection());
+        updateConversationsList();
         startServer();
     }
 
@@ -118,10 +119,8 @@ public class ServerController {
     }
 
     private void showConversationMessages(String conversationName) {
-        conversationMessagesListView.getItems().clear();
-        for (String messageLine : serverModel.getMessagesForConversation(conversationName)) {
-            conversationMessagesListView.getItems().add(messageLine);
-        }
+        conversationMessagesListView.getItems().setAll(
+            serverModel.getMessagesForConversation(conversationName));
     }
 
     private void closeClientSocket(Socket clientSocket) {
