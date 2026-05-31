@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ua.knure.icq.server.controller.ServerController" style="-fx-background-color: #1f1f1f;">
+    <center>
+        <VBox spacing="14.0" style="-fx-background-color: #1f1f1f; -fx-padding: 28;">
+            <children>
+                <Label text="SELECTED CONVERSATION" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #ffc400;" />
+                <Label fx:id="selectedConversationLabel" text="No conversation selected" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #fffdf7;" />
+                <ListView fx:id="conversationMessagesListView" prefHeight="470.0" prefWidth="620.0" style="-fx-control-inner-background: #1f1f1f; -fx-background-color: #1f1f1f; -fx-text-fill: #fffdf7; -fx-font-size: 14px; -fx-border-color: transparent;" />
+            </children>
+        </VBox>
+    </center>
+    <right>
+        <VBox prefWidth="280.0" spacing="14.0" style="-fx-background-color: #fffdf7; -fx-padding: 28;">
+            <children>
+                <Label text="LIST OF CONVERSATIONS:" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #333333;" />
+                <ListView fx:id="conversationsListView" prefHeight="510.0" prefWidth="230.0" style="-fx-background-color: #fffdf7; -fx-border-color: #e5dac8; -fx-border-radius: 8; -fx-background-radius: 8;" />
+            </children>
+        </VBox>
+    </right>
+</BorderPane>
