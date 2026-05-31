@@ -1,11 +1,17 @@
 package ua.knure.icq.client.controller;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
+import ua.knure.icq.client.model.ChatModel;
 import ua.knure.icq.client.model.LoginModel;
 
 public class LoginController {
+    private static final int SERVER_PORT = 12345;
+
     @FXML
     private TextField serverIpField;
 
@@ -37,10 +43,34 @@ public class LoginController {
             return;
         }
 
-        System.out.println("Server IP: " + loginModel.getServerIp());
-        System.out.println("Username: " + loginModel.getUsername());
+        ChatModel chatModel = new ChatModel(loginModel.getUsername(), loginModel.getServerIp(), SERVER_PORT);
 
-        // Пізніше тут буде підключення до сервера і відкриття chat-view.fxml
+        if (!chatModel.connect()) {
+            System.out.println("[ERROR] Failed to connect to server.");
+            return;
+        }
+        openChatWindow(chatModel);
+    }
+
+    private void openChatWindow(ChatModel chatModel) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ua/knure/icq/client/view/chat-view.fxml"));
+            Scene scene = new Scene(loader.load());
+            ChatController chatController = loader.getController();
+            chatController.setChatModel(chatModel);
+            Stage chatStage = new Stage();
+            chatStage.setTitle("ICQ Chat - " + chatModel.getUsername());
+            chatStage.setScene(scene);
+            chatStage.setWidth(1000);
+            chatStage.setHeight(720);
+            chatStage.show();
+            connectButton.getScene().getWindow().hide();
+
+        } catch (Exception exception) {
+            System.out.println("[ERROR] Failed to open chat window.");
+            exception.printStackTrace();
+            chatModel.disconnect();
+        }
     }
 
     private void handleCancel() {

@@ -52,6 +52,10 @@ public class ChatModel {
         messages.add(message);
     }
 
+    public void sendMessage(String text) {
+        sendMessage(selectedReceiver, text);
+    }
+
     public Message receiveMessage() {
         String xml = connection.receiveLine();
 
