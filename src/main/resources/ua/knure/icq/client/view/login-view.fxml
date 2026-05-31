@@ -4,15 +4,71 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.shape.SVGPath?>
 
-
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="250.0" prefWidth="450.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ua.knure.icq.client.controller.LoginController">
-   <children>
-      <Button fx:id="cancelButton" layoutX="77.0" layoutY="181.0" mnemonicParsing="false" text="Cancel" />
-      <Button fx:id="connectButton" layoutX="249.0" layoutY="182.0" mnemonicParsing="false" text="Connect" />
-      <TextField fx:id="usernameField" layoutX="158.0" layoutY="92.0" />
-      <TextField fx:id="serverIpField" layoutX="158.0" layoutY="50.0" text="localhost" />
-      <Label layoutX="63.0" layoutY="54.0" text="Server IP:" />
-      <Label layoutX="63.0" layoutY="96.0" text="User name:" />
-   </children>
-</AnchorPane>
+<StackPane maxHeight="300.0" maxWidth="760.0" minHeight="300.0" minWidth="760.0" prefHeight="300.0" prefWidth="760.0" style="-fx-background-color: #efe6d5;" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ua.knure.icq.client.controller.LoginController">
+    <children>
+        <StackPane maxHeight="300.0" maxWidth="760.0" minHeight="300.0" minWidth="760.0" prefHeight="300.0" prefWidth="760.0" style="-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.18), 18, 0, 0, 4);">
+            <children>
+                <HBox maxHeight="300.0" maxWidth="760.0" minHeight="300.0" minWidth="760.0" prefHeight="300.0" prefWidth="760.0">
+                    <clip>
+                        <Rectangle arcHeight="36.0" arcWidth="36.0" height="300.0" width="760.0" />
+                    </clip>
+                    <children>
+                        <AnchorPane maxHeight="300.0" maxWidth="240.0" minHeight="300.0" minWidth="240.0" prefHeight="300.0" prefWidth="240.0" style="-fx-background-color: #ffc400;">
+                            <children>
+                                <Circle centerX="32.0" centerY="278.0" fill="#ff9800" radius="36.0" />
+                                <Circle centerX="30.0" centerY="25.0" fill="#ffd54f" radius="46.0" />
+                                <VBox alignment="CENTER" layoutX="40.0" layoutY="70.0" prefWidth="160.0" spacing="8.0">
+                                    <children>
+                                        <SVGPath content="M4 4 H36 Q40 4 40 8 V24 Q40 28 36 28 H16 L8 36 V28 H4 Q0 28 0 24 V8 Q0 4 4 4 Z" fill="#111111" scaleX="0.9" scaleY="0.9" />
+                                        <Label style="-fx-font-size: 34px; -fx-font-weight: bold; -fx-text-fill: black;" text="ICQ" />
+                                        <Label style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: black;" text="MESSENGER" />
+                                        <Label style="-fx-font-size: 16px; -fx-text-fill: #2b2b2b;" text="Stay connected." />
+                                    </children>
+                                </VBox>
+                            </children>
+                        </AnchorPane>
+                        <AnchorPane maxHeight="300.0" maxWidth="520.0" minHeight="300.0" minWidth="520.0" prefHeight="300.0" prefWidth="520.0" style="-fx-background-color: #fffdf7;">
+                            <children>
+                                <Pane layoutX="452.0" layoutY="22.0" prefHeight="40.0" prefWidth="44.0">
+                                    <children>
+                                        <Circle centerX="6.0" centerY="6.0" fill="#d8b13d" radius="2.0" />
+                                        <Circle centerX="18.0" centerY="6.0" fill="#d8b13d" radius="2.0" />
+                                        <Circle centerX="30.0" centerY="6.0" fill="#d8b13d" radius="2.0" />
+                                        <Circle centerX="6.0" centerY="18.0" fill="#d8b13d" radius="2.0" />
+                                        <Circle centerX="18.0" centerY="18.0" fill="#d8b13d" radius="2.0" />
+                                        <Circle centerX="30.0" centerY="18.0" fill="#d8b13d" radius="2.0" />
+                                        <Circle centerX="6.0" centerY="30.0" fill="#d8b13d" radius="2.0" />
+                                        <Circle centerX="18.0" centerY="30.0" fill="#d8b13d" radius="2.0" />
+                                        <Circle centerX="30.0" centerY="30.0" fill="#d8b13d" radius="2.0" />
+                                    </children>
+                                </Pane>
+                                <VBox layoutX="42.0" layoutY="42.0" spacing="12.0">
+                                    <children>
+                                        <Label style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #333333;" text="Server IP:" />
+                                        <TextField fx:id="serverIpField" prefHeight="38.0" prefWidth="330.0" style="-fx-background-color: white; -fx-border-color: #d8d1c5; -fx-border-radius: 6; -fx-background-radius: 6;" text="localhost" />
+                                        <Label style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #333333;" text="User name:" />
+                                        <TextField fx:id="usernameField" prefHeight="38.0" prefWidth="330.0" style="-fx-background-color: white; -fx-border-color: #d8d1c5; -fx-border-radius: 6; -fx-background-radius: 6;" />
+                                        <HBox spacing="20.0" style="-fx-padding: 18 0 0 0;">
+                                            <children>
+                                                <Button fx:id="cancelButton" prefHeight="40.0" prefWidth="130.0" style="-fx-background-color: transparent; -fx-border-color: #d1a74b; -fx-border-radius: 6; -fx-background-radius: 6; -fx-text-fill: #a06b00; -fx-font-weight: bold; -fx-cursor: hand;" text="CANCEL" />
+                                                <Button fx:id="connectButton" prefHeight="40.0" prefWidth="130.0" style="-fx-background-color: #ffc400; -fx-background-radius: 6; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;" text="CONNECT" />
+                                            </children>
+                                        </HBox>
+                                    </children>
+                                </VBox>
+                            </children>
+                        </AnchorPane>
+                    </children>
+                </HBox>
+            </children>
+        </StackPane>
+    </children>
+</StackPane>
