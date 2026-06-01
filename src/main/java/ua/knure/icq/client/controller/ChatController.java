@@ -7,6 +7,11 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import ua.knure.icq.client.model.ChatModel;
+import javafx.application.Platform;
+import ua.knure.icq.common.Message;
+import ua.knure.icq.common.XmlProtocol;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,27 +39,22 @@ public class ChatController {
 
     private ChatModel chatModel;
     private List<String> allUsers;
+    private Map<String, List<String>> conversations;
 
     @FXML
     private void initialize() {
         allUsers = new ArrayList<>();
+        conversations = new HashMap<>();
 
         sendButton.setOnAction(event -> handleSendMessage());
         usersListView.setOnMouseClicked(event -> handleUserSelection());
         searchField.textProperty().addListener((observable, oldValue, newValue) -> filterUsers(newValue));
-
-        addTemporaryUsers();
     }
 
     public void setChatModel(ChatModel chatModel) {
         this.chatModel = chatModel;
         usernameLabel.setText(chatModel.getUsername());
-    }
-
-    private void addTemporaryUsers() {
-        allUsers.add("Alex");
-        allUsers.add("Maria");
-        usersListView.getItems().setAll(allUsers);
+        startReceiveThread();
     }
 
     private void filterUsers(String searchText) {
@@ -86,8 +86,7 @@ public class ChatController {
             chatModel.setSelectedReceiver(selectedUser);
         }
 
-        messagesArea.clear();
-        messagesArea.appendText("Chat with " + selectedUser + "\n\n");
+        showConversation(selectedUser);
     }
 
     private void handleSendMessage() {
@@ -110,8 +109,87 @@ public class ChatController {
         }
 
         chatModel.sendMessage(receiver, text);
-
-        messagesArea.appendText("Me: " + text + "\n");
+        addMessageToConversation(receiver, "Me: " + text);
+        showConversation(receiver);
         messageField.clear();
+    }
+
+    private void startReceiveThread() {
+        Thread receiveThread = new Thread(() -> {
+            while (chatModel != null && chatModel.isConnected()) {
+                String line = chatModel.receiveLine();
+
+                if (line == null) {
+                    break;
+                }
+
+                if (line.startsWith("USER_LIST:")) {
+                    Platform.runLater(() -> updateUserList(line));
+                } else {
+                    Message message = XmlProtocol.fromXml(line);
+
+                    if (message != null) {
+                        Platform.runLater(() -> handleIncomingMessage(message));
+                    }
+                }
+            }
+        });
+
+        receiveThread.setDaemon(true);
+        receiveThread.start();
+    }
+
+    private void updateUserList(String userListLine) {
+        allUsers.clear();
+
+        String usersText = userListLine.substring("USER_LIST:".length());
+
+        if (!usersText.isBlank()) {
+            String[] users = usersText.split(",");
+
+            for (String user : users) {
+                String trimmedUser = user.trim();
+
+                if (!trimmedUser.isBlank() && !trimmedUser.equals(chatModel.getUsername())) {
+                    allUsers.add(trimmedUser);
+                }
+            }
+        }
+
+        usersListView.getItems().setAll(allUsers);
+    }
+
+    private void handleIncomingMessage(Message message) {
+        String sender = message.getSender();
+        String messageLine = sender + ": " + message.getText();
+
+        addMessageToConversation(sender, messageLine);
+        String selectedReceiver = chatModel.getSelectedReceiver();
+
+        if (selectedReceiver != null && selectedReceiver.equals(message.getSender())) {
+            showConversation(sender);
+        } else {
+            System.out.println("New message from " + message.getSender() + ": " + message.getText());
+        }
+    }
+
+    private void addMessageToConversation(String user, String messageLine) {
+        conversations.putIfAbsent(user, new ArrayList<>());
+        conversations.get(user).add(messageLine);
+    }
+
+    private void showConversation(String user) {
+        messagesArea.clear();
+        messagesArea.appendText("Chat with " + user + "\n\n");
+
+        List<String> conversationMessages = conversations.get(user);
+
+        if (conversationMessages == null) {
+            return;
+        }
+
+        for (String messageLine : conversationMessages) {
+            messagesArea.appendText(messageLine + "\n");
+        }
     }
 }

@@ -7,12 +7,14 @@ import javafx.scene.control.ListView;
 import ua.knure.icq.common.Message;
 import ua.knure.icq.common.XmlProtocol;
 import ua.knure.icq.server.model.ServerModel;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ServerController {
     private static final int PORT = 12345;
@@ -27,10 +29,12 @@ public class ServerController {
     private ListView<String> conversationsListView;
 
     private ServerModel serverModel;
+    private Map<String, PrintWriter> activeClients;
 
     @FXML
     private void initialize() {
         serverModel = new ServerModel();
+        activeClients = new HashMap<>();
         conversationsListView.setOnMouseClicked(event -> handleConversationSelection());
         updateConversationsList();
         startServer();
@@ -65,20 +69,50 @@ public class ServerController {
     }
 
     private void handleClient(Socket clientSocket) {
-        try (BufferedReader input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))) {
-            System.out.println("Server accepted client connection.");
-            String clientMessage = input.readLine();
-            while (clientMessage != null) {
+    String username = null;
+
+    try (BufferedReader input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+         PrintWriter output = new PrintWriter(clientSocket.getOutputStream(), true)) {
+
+        System.out.println("Server accepted client connection.");
+
+        String clientMessage = input.readLine();
+
+        while (clientMessage != null) {
+            if (clientMessage.startsWith("LOGIN:")) {
+                username = clientMessage.substring("LOGIN:".length());
+                registerClient(username, output);
+            } else {
                 processClientMessage(clientMessage);
-                clientMessage = input.readLine();
             }
-            System.out.println("Client disconnected.");
+
+            clientMessage = input.readLine();
+        }
+
+        System.out.println("Client disconnected.");
+
         } catch (IOException exception) {
             System.out.println("[ERROR] Error while working with client.");
             exception.printStackTrace();
         } finally {
+            if (username != null) {
+                unregisterClient(username);
+            }
+
             closeClientSocket(clientSocket);
         }
+    }
+
+    private synchronized void registerClient(String username, PrintWriter output) {
+        activeClients.put(username, output);
+        System.out.println("User registered: " + username);
+        broadcastUserList();
+    }
+
+    private synchronized void unregisterClient(String username) {
+        activeClients.remove(username);
+        System.out.println("User disconnected: " + username);
+        broadcastUserList();
     }
 
     private void processClientMessage(String clientMessage) {
@@ -88,6 +122,7 @@ public class ServerController {
             return;
         }
         serverModel.addMessage(message);
+        forwardMessageToReceiver(message, clientMessage);
         Platform.runLater(() -> {
             updateConversationsList();
             String selectedConversation = conversationsListView.getSelectionModel().getSelectedItem();
@@ -130,5 +165,25 @@ public class ServerController {
             System.out.println("[ERROR] Error while closing client socket.");
             exception.printStackTrace();
         }
+    }
+
+    private synchronized void forwardMessageToReceiver(Message message, String messageXml) {
+        PrintWriter receiverOutput = activeClients.get(message.getReceiver());
+        if (receiverOutput == null) {
+            System.out.println("[INFO] Receiver is offline: " + message.getReceiver());
+            return;
+        }
+        receiverOutput.println(messageXml);
+        System.out.println("Message forwarded to: " + message.getReceiver());
+    }
+
+    private synchronized void broadcastUserList() {
+        String userListLine = "USER_LIST:" + String.join(",", activeClients.keySet());
+
+        for (PrintWriter output : activeClients.values()) {
+            output.println(userListLine);
+        }
+
+        System.out.println("User list sent: " + userListLine);
     }
 }

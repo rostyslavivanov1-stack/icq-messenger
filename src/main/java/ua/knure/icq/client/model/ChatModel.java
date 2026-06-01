@@ -26,7 +26,12 @@ public class ChatModel {
     }
 
     public boolean connect() {
-        return connection.connect(serverIp, serverPort);
+        boolean connected = connection.connect(serverIp, serverPort);
+        if (!connected) {
+            return false;
+        }
+        connection.sendLine("LOGIN:" + username);
+        return true;
     }
 
     public void sendMessage(String receiver, String text) {
@@ -68,6 +73,10 @@ public class ChatModel {
             messages.add(message);
         }
         return message;
+    }
+
+    public String receiveLine() {
+        return connection.receiveLine();
     }
 
     public void disconnect() {
